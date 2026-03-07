@@ -1,6 +1,6 @@
 {
   "name": "@vladimirshefer/gret",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "CLI tool for searching markdown files with full-text search",
   "main": "dist/gret.js",
   "bin": {
