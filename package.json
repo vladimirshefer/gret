@@ -1,0 +1,33 @@
+{
+  "name": "@vladimirshefer/gret",
+  "version": "1.0.0",
+  "description": "CLI tool for searching markdown files with full-text search",
+  "main": "dist/gret.js",
+  "bin": {
+    "gret": "dist/gret.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "markdown",
+    "search",
+    "cli",
+    "fts"
+  ],
+  "author": "Vladimir Shefer",
+  "license": "MIT",
+  "files": [
+    "dist/**/*"
+  ],
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3"
+  }
+}

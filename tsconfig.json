@@ -4,6 +4,11 @@
     "target": "es2017",
     "strict": false,
     "esModuleInterop": true,
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
