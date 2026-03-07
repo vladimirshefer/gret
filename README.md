@@ -20,17 +20,10 @@ gret --index
 
 **Run search:**
 ```bash
-ts-node gret.ts "search terms"
-```
-
-**Rebuild index:**
-```bash
-ts-node gret.ts --index
-```
-
-**Run tests:**
-```bash
-ts-node test.ts
+gret "search terms"
+# also:
+# gret search terms
+# gret "search" "terms"
 ```
 
 ## Key Implementation Details
@@ -41,3 +34,11 @@ ts-node test.ts
 - **Section parsing**: Each H1 starts a new top-level group; H2-H6 create subsections with hierarchical headings
 - **Ranking**: BM25 algorithm with custom column weights favoring title and heading matches
 - **Acronym expansion**: Uses query trees with OR logic to match either acronym or expansion
+
+
+## Dev Setup
+
+**Run tests:**
+```bash
+ts-node test.ts
+```
