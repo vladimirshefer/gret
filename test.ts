@@ -13,12 +13,11 @@ function assertEquals(expected: any, actual: any) {
 }
 
 test(() => {
-    console.error("hello")
     const acr = SearchConfig.getAcronymRules;
     SearchConfig.getAcronymRules = () => {
         return [{ acronym: "nasa", expansion: "national aeronautics and space administration"}]
     }
-    assert.equal("(scientist OR of OR (nasa OR nasa OR national aeronautics space administration))", SearchLogic.expandAcronyms(["scientist", "of", "nasa"]).get());
+    assert.equal("(scientist OR of OR ((nasa) OR (nasa) OR (national AND aeronautics AND and AND space AND administration)))", SearchLogic.expandAcronyms(["scientist", "of", "nasa"]).get());
 })
 
 test(() => {
