@@ -1,0 +1,9 @@
+*.ts
+!dist/**/*.d.ts
+tsconfig.json
+.git
+.github
+.idea
+test.ts
+Makefile
+node_modules
