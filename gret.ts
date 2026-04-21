@@ -420,6 +420,7 @@ namespace Display {
         cyan: '\x1b[36m',
         yellow: '\x1b[33m',
         gray: '\x1b[90m',
+        red: '\x1b[31m',
         reset: '\x1b[0m'
     };
 
@@ -460,7 +461,8 @@ namespace Display {
 
             pathResults.forEach(row => {
                 const headingDisplay = row.headings ? ` ${colors.gray}[${row.headings}]${colors.reset}` : '';
-                console.log(`  ${colors.yellow}${row.line}${colors.reset}${headingDisplay}: ${row.preview.replace(/\n/g, ' ')}`);
+                const preview = row.preview.replace(/\n/g, ' ').replace(/\[([^\]]+)\]/g, `${colors.red}$1${colors.reset}`);
+                console.log(`  ${colors.yellow}${row.line}${colors.reset}${headingDisplay}: ${preview}`);
             });
         });
     }
