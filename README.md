@@ -10,6 +10,22 @@ Gret is a markdown full-text search tool using SQLite FTS5 (Full-Text Search).
 It indexes markdown files in a directory, supports acronym expansion in queries,
 and provides ranked search results with BM25 scoring.
 
+## Setup
+
+**Option 1: Install from npm**
+```bash
+npm install -g @vladimirshefer/gret
+```
+
+**Option 2: Build from source**
+```bash
+git clone https://github.com/vladimirshefer/gret.git
+cd gret
+npm install
+npm run build
+npm install -g .
+```
+
 ## Commands
 
 Index files in current directory.
