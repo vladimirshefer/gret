@@ -649,8 +649,30 @@ export namespace Cli {
 async function main() {
     const args = process.argv.slice(2);
 
+    if (args.includes('--help') || args.length === 0) {
+        console.log(`gret — full-text search over indexed markdown libraries
+
+USAGE
+  gret "<query>"              Search all libraries
+  gret --index                Index current directory (auto-registers as library)
+  gret --library <path>       Index a specific directory (auto-registers as library)
+  gret --reindex              Rebuild index for all registered libraries
+  gret --help                 Show this help
+
+CONFIG
+  Libraries: ~/.gret/config.json
+  Database:  ~/.gret/.gret.db
+  Acronyms:  ~/.gret/acronyms.txt  (format: "ACRONYM > expansion")
+
+NOTES
+  - Running --index inside an existing library reindexes the parent library.
+  - Registering a path that contains an existing library is an error.
+  - Remove a library by editing config.json manually, then run --reindex.`);
+        return;
+    }
+
     Cli.checkDependencies(['sqlite3']);
-    SearchConfig.loadAcronyms()
+    SearchConfig.loadAcronyms();
 
     if (args.includes('--reindex')) {
         await Cli.reindexAll();
@@ -664,11 +686,8 @@ async function main() {
         await Cli.indexFiles(libPath);
     } else if (args.includes('--index')) {
         await Cli.indexFiles();
-    } else if (args.length > 0) {
-        Cli.searchNonInteractive(args.join(' '));
     } else {
-        console.error('Please provide search terms or use --index to rebuild the index.');
-        process.exit(1);
+        Cli.searchNonInteractive(args.join(' '));
     }
 }
 
