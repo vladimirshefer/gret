@@ -402,7 +402,7 @@ export namespace SearchLogic {
                 WHERE notes MATCH ?
             )
             ORDER BY rank
-            LIMIT 5;
+            LIMIT 50;
         `);
 
         const results: SearchResult[] = stmt.all(ftsQuery) as any[];
@@ -449,13 +449,13 @@ namespace Display {
         Object.keys(groupedResults).forEach(path => {
             groupedResults[path].sort((a, b) => b.rank - a.rank);
         });
-        const sortedPaths = Object.keys(groupedResults).sort((a, b) => topRankByPath[a] - topRankByPath[b]);
+        const sortedPaths = Object.keys(groupedResults).sort((a, b) => topRankByPath[a] - topRankByPath[b]).slice(0, 5);
 
         sortedPaths.forEach((currentPath, index) => {
             if (index > 0) {
                 console.log('');
             }
-            const pathResults = groupedResults[currentPath];
+            const pathResults = groupedResults[currentPath].slice(0, 3);
             const topRank = topRankByPath[currentPath];
             console.log(`${colors.cyan}${currentPath}${colors.reset} ${colors.gray}(rank: ${topRank.toFixed(2)})${colors.reset}`);
 
