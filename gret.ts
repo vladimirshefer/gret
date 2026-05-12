@@ -120,6 +120,64 @@ export namespace SearchConfig {
     export function getAcronymRules(): AcronymRule[] {
         return acronymRules;
     }
+
+    /**
+     * Adds a new acronym definition to the acronyms file.
+     * Normalizes both acronym and expansion (trim, lowercase, remove special chars).
+     * @param acronymRaw - The acronym (left side, should be single term)
+     * @param expansionRaw - The expansion text (right side, can be multiple terms)
+     */
+    export function addAcronym(acronymRaw: string, expansionRaw: string): void {
+        if (!fs.existsSync(GRET_DIR)) {
+            fs.mkdirSync(GRET_DIR, { recursive: true });
+        }
+
+        // Normalize: trim, lowercase, remove non-alphanumeric (keep spaces for expansion)
+        const acronym = acronymRaw.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        const expansion = expansionRaw.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '');
+
+        if (!acronym) {
+            console.error("Error: acronym cannot be empty.");
+            return;
+        }
+
+        if (!expansion) {
+            console.error("Error: expansion cannot be empty.");
+            return;
+        }
+
+        // Read existing lines, check for duplicates
+        let existingLines: string[] = [];
+        if (fs.existsSync(ACRONYMS_FILE)) {
+            existingLines = fs.readFileSync(ACRONYMS_FILE, 'utf-8')
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line);
+        }
+
+        // Check if acronym already exists
+        const alreadyExists = existingLines.some(line => {
+            const parts = line.split('>').map(p => p.trim());
+            if (parts.length === 2) {
+                return parts[0].toLowerCase() === acronym;
+            }
+            return false;
+        });
+
+        if (alreadyExists) {
+            console.log(`Acronym '${acronym}' already exists.`);
+            return;
+        }
+
+        // Append new acronym
+        const newLine = `${acronym} > ${expansion}`;
+        const content = existingLines.length > 0
+            ? existingLines.join('\n') + '\n' + newLine
+            : newLine;
+
+        fs.writeFileSync(ACRONYMS_FILE, content + '\n');
+        console.log(`Added acronym: '${acronym}' = '${expansion}'`);
+    }
 }
 
 /**
@@ -657,6 +715,7 @@ USAGE
   gret --index                Index current directory (auto-registers as library)
   gret --library <path>       Index a specific directory (auto-registers as library)
   gret --reindex              Rebuild index for all registered libraries
+  gret --acronym abc=text     Add acronym definition
   gret --help                 Show this help
 
 CONFIG
@@ -668,6 +727,18 @@ NOTES
   - Running --index inside an existing library reindexes the parent library.
   - Registering a path that contains an existing library is an error.
   - Remove a library by editing config.json manually, then run --reindex.`);
+        return;
+    }
+
+    if (args.includes('--acronym')) {
+        const acronymIndex = args.indexOf('--acronym');
+        const acronymDef = args[acronymIndex + 1];
+        if (!acronymDef || !acronymDef.includes('=')) {
+            console.error('Please provide acronym definition in format: --acronym abc=definition text');
+            process.exit(1);
+        }
+        const [acronym, expansion] = acronymDef.split('=');
+        SearchConfig.addAcronym(acronym, expansion);
         return;
     }
 
