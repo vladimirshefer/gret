@@ -741,6 +741,10 @@ async function main() {
         const acronymIndex = args.indexOf('--acronym');
         const acronymDef = args[acronymIndex + 1];
         if (!acronymDef || !acronymDef.includes('=')) {
+            console.log(`Acronyms file: ${ACRONYMS_FILE}\n`);
+            if (fs.existsSync(ACRONYMS_FILE)) {
+                console.log(fs.readFileSync(ACRONYMS_FILE, 'utf-8'));
+            }
             console.log(getHelpText());
             return;
         }
