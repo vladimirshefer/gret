@@ -13,7 +13,7 @@ const GRET_DIR = path.join(os.homedir(), ".gret");
 const DB_FILE = path.join(GRET_DIR, ".gret.db");           // SQLite database file
 const ACRONYMS_FILE = path.join(GRET_DIR, "acronyms.txt"); // Acronym definitions
 const SRC_DIR = ".";             // Where to search for markdown files
-const FILE_PATTERN = "**/*.md";  // Glob pattern for indexed files
+const FILE_PATTERN = ["**/*.md", "**/.*/**/*.md"];  // Glob pattern for indexed files (includes dot-directories)
 const GRET_IGNORE = ['**/node_modules/**', "**/.git/**"];
 
 // --------------------------------------------------
@@ -479,7 +479,7 @@ export namespace Cli {
     export async function indexFiles(): Promise<void> {
         console.log(`Indexing markdown files in ${SRC_DIR}...`);
 
-        const files = await glob(FILE_PATTERN, {cwd: SRC_DIR, nodir: true, ignore: GRET_IGNORE, dot: true});
+        const files = await glob(FILE_PATTERN, {cwd: SRC_DIR, nodir: true, ignore: GRET_IGNORE, dot: true, follow: true});
         console.log(`Found ${files.length} files to index.`);
 
         const resultEntries: SearchLogic.SearchEntry[] = [];
