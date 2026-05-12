@@ -11,8 +11,8 @@ import {glob} from 'glob';
 // --------------------------------------------------
 const GRET_DIR = path.join(os.homedir(), ".gret");
 const DB_FILE = path.join(GRET_DIR, ".gret.db");           // SQLite database file
+const CONFIG_FILE = path.join(GRET_DIR, "config.json");    // Libraries config
 const ACRONYMS_FILE = path.join(GRET_DIR, "acronyms.txt"); // Acronym definitions
-const SRC_DIR = ".";             // Where to search for markdown files
 const FILE_PATTERN = ["**/*.md", "**/.*/**/*.md"];  // Glob pattern for indexed files (includes dot-directories)
 const GRET_IGNORE = ['**/node_modules/**', "**/.git/**"];
 
@@ -26,6 +26,36 @@ const GRET_IGNORE = ['**/node_modules/**', "**/.git/**"];
 //       Performs a non-interactive search.
 // --------------------------------------------------
 
+
+/**
+ * --------------------------------------------------
+ * Config Namespace — manages ~/.gret/config.json
+ * --------------------------------------------------
+ */
+namespace Config {
+    interface GretConfig {
+        libraries: { path: string }[];
+    }
+
+    function load(): GretConfig {
+        if (!fs.existsSync(CONFIG_FILE)) return { libraries: [] };
+        return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+    }
+
+    export function addLibrary(absPath: string): void {
+        const config = load();
+        if (!config.libraries.find(l => l.path === absPath)) {
+            config.libraries.push({ path: absPath });
+            if (!fs.existsSync(GRET_DIR)) fs.mkdirSync(GRET_DIR, { recursive: true });
+            fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+            console.log(`Registered library: ${absPath}`);
+        }
+    }
+
+    export function getLibraries(): { path: string }[] {
+        return load().libraries;
+    }
+}
 
 /**
  * --------------------------------------------------
@@ -304,6 +334,41 @@ export namespace SearchLogic {
         db.close();
     }
 
+    /**
+     * Saves search entries for a single library without touching other libraries' data.
+     * Deletes existing rows for the library by path prefix, then inserts new entries.
+     */
+    export function saveLibrary(libraryPath: string, entries: SearchEntry[]): void {
+        if (!fs.existsSync(GRET_DIR)) {
+            fs.mkdirSync(GRET_DIR, { recursive: true });
+        }
+
+        const db = new Database(DB_FILE);
+
+        db.exec(`
+            CREATE VIRTUAL TABLE IF NOT EXISTS notes USING fts5(
+                path,
+                title,
+                headings,
+                body,
+                line UNINDEXED,
+                tokenize='porter'
+            );
+        `);
+
+        db.prepare('DELETE FROM notes WHERE path LIKE ?').run(libraryPath + '/%');
+
+        const insertStmt = db.prepare(
+            'INSERT INTO notes (path, title, headings, body, line) VALUES (?, ?, ?, ?, ?)'
+        );
+
+        for (const entry of entries) {
+            insertStmt.run(entry.path, entry.title, entry.headings.join(" > "), entry.body, entry.line);
+        }
+
+        db.close();
+    }
+
     export namespace SynonymExpander {
         export interface QueryTree {
             get(): string;
@@ -472,25 +537,57 @@ namespace Display {
 export namespace Cli {
 
     /**
-     * Indexes all markdown files in the source directory.
-     * It creates a new SQLite database with an FTS5 table containing the
-     * file path, title, headings, and body of each file.
+     * Indexes all markdown files in the given directory (or CWD if omitted).
+     * Registers the directory as a library in config. Only replaces that library's entries.
      */
-    export async function indexFiles(): Promise<void> {
-        console.log(`Indexing markdown files in ${SRC_DIR}...`);
+    export async function indexFiles(libraryPath: string = process.cwd()): Promise<void> {
+        const absPath = path.resolve(libraryPath);
+        console.log(`Indexing markdown files in ${absPath}...`);
 
-        const files = await glob(FILE_PATTERN, {cwd: SRC_DIR, nodir: true, ignore: GRET_IGNORE, dot: true, follow: true});
+        Config.addLibrary(absPath);
+
+        const files = await glob(FILE_PATTERN, {cwd: absPath, nodir: true, ignore: GRET_IGNORE, dot: true, follow: true});
         console.log(`Found ${files.length} files to index.`);
 
         const resultEntries: SearchLogic.SearchEntry[] = [];
         for (const file of files) {
-            const content = fs.readFileSync(file, 'utf-8');
-            const entries = FileParser.parseFile(path.resolve(file), content);
-            entries.forEach(entry => resultEntries.push(entry))
+            const fullPath = path.resolve(absPath, file);
+            const content = fs.readFileSync(fullPath, 'utf-8');
+            const entries = FileParser.parseFile(fullPath, content);
+            entries.forEach(entry => resultEntries.push(entry));
         }
 
-        SearchLogic.save(resultEntries);
+        SearchLogic.saveLibrary(absPath, resultEntries);
         console.log("Index complete.");
+    }
+
+    /**
+     * Reindexes all registered libraries from scratch (drops and recreates the entire DB).
+     */
+    export async function reindexAll(): Promise<void> {
+        const libraries = Config.getLibraries();
+        if (libraries.length === 0) {
+            console.error("No libraries registered. Use --index or --library to add one.");
+            return;
+        }
+
+        console.log(`Reindexing ${libraries.length} libraries...`);
+
+        const allEntries: SearchLogic.SearchEntry[] = [];
+        for (const library of libraries) {
+            console.log(`Indexing ${library.path}...`);
+            const files = await glob(FILE_PATTERN, {cwd: library.path, nodir: true, ignore: GRET_IGNORE, dot: true, follow: true});
+            console.log(`  Found ${files.length} files.`);
+            for (const file of files) {
+                const fullPath = path.resolve(library.path, file);
+                const content = fs.readFileSync(fullPath, 'utf-8');
+                const entries = FileParser.parseFile(fullPath, content);
+                entries.forEach(e => allEntries.push(e));
+            }
+        }
+
+        SearchLogic.save(allEntries);
+        console.log("Reindex complete.");
     }
 
 
@@ -536,7 +633,17 @@ async function main() {
     Cli.checkDependencies(['sqlite3']);
     SearchConfig.loadAcronyms()
 
-    if (args.includes('--index')) {
+    if (args.includes('--reindex')) {
+        await Cli.reindexAll();
+    } else if (args.includes('--library')) {
+        const libIndex = args.indexOf('--library');
+        const libPath = args[libIndex + 1];
+        if (!libPath) {
+            console.error('Please provide a path after --library.');
+            process.exit(1);
+        }
+        await Cli.indexFiles(libPath);
+    } else if (args.includes('--index')) {
         await Cli.indexFiles();
     } else if (args.length > 0) {
         Cli.searchNonInteractive(args.join(' '));
