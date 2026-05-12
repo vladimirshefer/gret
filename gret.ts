@@ -42,14 +42,35 @@ namespace Config {
         return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
     }
 
-    export function addLibrary(absPath: string): void {
+    /**
+     * Resolves the effective library path for a given directory.
+     * - If the path is already a library, returns it as-is.
+     * - If the path is inside an existing library, returns the parent library (git-like behavior).
+     * - If an existing library is inside this path, errors — config conflict.
+     * - Otherwise, registers the path as a new library and returns it.
+     */
+    export function resolveLibrary(absPath: string): string {
         const config = load();
-        if (!config.libraries.find(l => l.path === absPath)) {
-            config.libraries.push({ path: absPath });
-            if (!fs.existsSync(GRET_DIR)) fs.mkdirSync(GRET_DIR, { recursive: true });
-            fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
-            console.log(`Registered library: ${absPath}`);
+
+        if (config.libraries.find(l => l.path === absPath)) return absPath;
+
+        const parent = config.libraries.find(l => absPath.startsWith(l.path + '/'));
+        if (parent) {
+            console.log(`'${absPath}' is part of library '${parent.path}', reindexing '${parent.path}'`);
+            return parent.path;
         }
+
+        const child = config.libraries.find(l => l.path.startsWith(absPath + '/'));
+        if (child) {
+            console.error(`Error: existing library '${child.path}' is inside '${absPath}'. Remove it from config.json first.`);
+            process.exit(1);
+        }
+
+        config.libraries.push({ path: absPath });
+        if (!fs.existsSync(GRET_DIR)) fs.mkdirSync(GRET_DIR, { recursive: true });
+        fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+        console.log(`Registered library: ${absPath}`);
+        return absPath;
     }
 
     export function getLibraries(): { path: string }[] {
@@ -541,10 +562,8 @@ export namespace Cli {
      * Registers the directory as a library in config. Only replaces that library's entries.
      */
     export async function indexFiles(libraryPath: string = process.cwd()): Promise<void> {
-        const absPath = path.resolve(libraryPath);
+        const absPath = Config.resolveLibrary(path.resolve(libraryPath));
         console.log(`Indexing markdown files in ${absPath}...`);
-
-        Config.addLibrary(absPath);
 
         const files = await glob(FILE_PATTERN, {cwd: absPath, nodir: true, ignore: GRET_IGNORE, dot: true, follow: true});
         console.log(`Found ${files.length} files to index.`);
