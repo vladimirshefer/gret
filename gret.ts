@@ -557,6 +557,31 @@ export namespace SearchLogic {
 }
 
 /**
+ * Help text
+ */
+function getHelpText(): string {
+    return `gret — full-text search over indexed markdown libraries
+
+USAGE
+  gret "<query>"              Search all libraries
+  gret --index                Index current directory (auto-registers as library)
+  gret --library <path>       Index a specific directory (auto-registers as library)
+  gret --reindex              Rebuild index for all registered libraries
+  gret --acronym abc=text     Add acronym definition
+  gret --help                 Show this help
+
+CONFIG
+  Libraries: ~/.gret/config.json
+  Database:  ~/.gret/.gret.db
+  Acronyms:  ~/.gret/acronyms.txt  (format: "ACRONYM > expansion")
+
+NOTES
+  - Running --index inside an existing library reindexes the parent library.
+  - Registering a path that contains an existing library is an error.
+  - Remove a library by editing config.json manually, then run --reindex.`;
+}
+
+/**
  * Display/Formatting Namespace
  */
 namespace Display {
@@ -708,25 +733,7 @@ async function main() {
     const args = process.argv.slice(2);
 
     if (args.includes('--help') || args.length === 0) {
-        console.log(`gret — full-text search over indexed markdown libraries
-
-USAGE
-  gret "<query>"              Search all libraries
-  gret --index                Index current directory (auto-registers as library)
-  gret --library <path>       Index a specific directory (auto-registers as library)
-  gret --reindex              Rebuild index for all registered libraries
-  gret --acronym abc=text     Add acronym definition
-  gret --help                 Show this help
-
-CONFIG
-  Libraries: ~/.gret/config.json
-  Database:  ~/.gret/.gret.db
-  Acronyms:  ~/.gret/acronyms.txt  (format: "ACRONYM > expansion")
-
-NOTES
-  - Running --index inside an existing library reindexes the parent library.
-  - Registering a path that contains an existing library is an error.
-  - Remove a library by editing config.json manually, then run --reindex.`);
+        console.log(getHelpText());
         return;
     }
 
@@ -734,8 +741,8 @@ NOTES
         const acronymIndex = args.indexOf('--acronym');
         const acronymDef = args[acronymIndex + 1];
         if (!acronymDef || !acronymDef.includes('=')) {
-            console.error('Please provide acronym definition in format: --acronym abc=definition text');
-            process.exit(1);
+            console.log(getHelpText());
+            return;
         }
         const [acronym, expansion] = acronymDef.split('=');
         SearchConfig.addAcronym(acronym, expansion);
