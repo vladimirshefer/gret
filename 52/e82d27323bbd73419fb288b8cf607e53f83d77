@@ -1,0 +1,30 @@
+.github/workflows/publish.yml
+  s_6c03bac6b2fef4::t_b1f91685c946e8 18,20
+  s_3cb044018f6b6a::t_63b91633eeb469 34
+package.json
+  s_6c03bac6b2fef4::t_68ebc504c42afb 21-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "52e82d27323bbd73419fb288b8cf607e53f83d77",
+  "prompts": {},
+  "sessions": {
+    "s_3cb044018f6b6a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64b8c4a8-b404-4eb7-b70c-a0a9f565df97",
+        "model": "claude-haiku-4-5-20251001"
+      },
+      "human_author": "Vladimir Shefer <quameu@gmail.com>"
+    },
+    "s_6c03bac6b2fef4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e6601694-f811-40c0-bdf8-e1f00b91b5c9",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "Vladimir Shefer <quameu@gmail.com>"
+    }
+  }
+}
