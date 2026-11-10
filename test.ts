@@ -1,4 +1,4 @@
-import {FileParser, SearchConfig, SearchLogic} from "./gret";
+import {FileParser, SearchConfig, SearchEngine, SearchLogic} from "./gret";
 import assert from "assert";
 
 const gret = require("./gret")
@@ -103,6 +103,13 @@ Details about Beta project.
             }
         ]
     )
+})
+
+test(() => {
+    assert.deepStrictEqual(
+        SearchEngine.Tokenizers.SimpleTokenizer.tokenize("Größe Müller, foo_bar! routing"),
+        ["Größe", "Müller", "foo_bar", "routing"]
+    );
 })
 
 test(() => {

@@ -133,8 +133,8 @@ export namespace SearchConfig {
         }
 
         // Normalize: trim, lowercase, remove non-alphanumeric (keep spaces for expansion)
-        const acronym = acronymRaw.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-        const expansion = expansionRaw.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '');
+        const acronym = acronymRaw.trim().toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+        const expansion = expansionRaw.trim().toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '');
 
         if (!acronym) {
             console.error("Error: acronym cannot be empty.");
@@ -256,7 +256,7 @@ export namespace SearchEngine {
 
         export const SimpleTokenizer: Tokenizer = {
             tokenize(text: string): string[] {
-                return text.split(/\W+/).filter(word => word.length > 0);
+                return text.split(/[^\p{L}\p{N}_]+/u).filter(word => word.length > 0);
             }
         }
     }
