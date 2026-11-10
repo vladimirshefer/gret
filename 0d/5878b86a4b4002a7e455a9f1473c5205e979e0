@@ -1,0 +1,19 @@
+gret.ts
+  s_6c03bac6b2fef4::t_abfd2b9f2f9548 445
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0d5878b86a4b4002a7e455a9f1473c5205e979e0",
+  "prompts": {},
+  "sessions": {
+    "s_6c03bac6b2fef4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e6601694-f811-40c0-bdf8-e1f00b91b5c9",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "Vladimir Shefer <quameu@gmail.com>"
+    }
+  }
+}
