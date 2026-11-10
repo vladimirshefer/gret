@@ -114,7 +114,7 @@ export namespace SearchConfig {
             })
             .filter((rule): rule is AcronymRule => rule !== null);
 
-        console.log(`Loaded ${acronymRules.length} acronym rules.`);
+        console.error(`Loaded ${acronymRules.length} acronym rules.`);
     }
 
     export function getAcronymRules(): AcronymRule[] {
