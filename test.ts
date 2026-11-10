@@ -113,6 +113,10 @@ test(() => {
 })
 
 test(() => {
+    assert.deepStrictEqual(SearchLogic.executeSearch("!!!"), []);
+})
+
+test(() => {
     const mockContent = ["# Guide", "Intro.", "## Deploy", "```bash", "# comment, not a heading", "```", "Done."].join("\n");
 
     const results = FileParser.parseFile("mock/path/Notes.md", mockContent);

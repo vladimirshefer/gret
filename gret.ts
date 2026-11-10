@@ -525,7 +525,9 @@ export namespace SearchLogic {
      */
     export function executeSearch(query: string): SearchResult[] {
         console.error("Query: " + query)
-        const ftsQuery = SearchLogic.parseQuery(analyze(query));
+        const tokens = analyze(query);
+        if (tokens.length === 0) return [];
+        const ftsQuery = SearchLogic.parseQuery(tokens);
         console.error("FTS Query: " + ftsQuery)
 
         const db = new Database(DB_FILE, { readonly: true });
