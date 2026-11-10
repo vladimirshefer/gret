@@ -614,9 +614,9 @@ namespace Display {
             topRankByPath[result.path] = Math.min(topRankByPath[result.path] || 0, result.rank); // bm25 returns negative ranks
         })
 
-        // Sort results within each path group by rank (descending)
+        // Sort results within each path group by rank (ascending, bm25 returns negative ranks)
         Object.keys(groupedResults).forEach(path => {
-            groupedResults[path].sort((a, b) => b.rank - a.rank);
+            groupedResults[path].sort((a, b) => a.rank - b.rank);
         });
         const sortedPaths = Object.keys(groupedResults).sort((a, b) => topRankByPath[a] - topRankByPath[b]).slice(0, 5);
 
