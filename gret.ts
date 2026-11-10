@@ -228,7 +228,7 @@ export namespace FileParser {
                 pushSection();
                 stack = []; // reset hierarchy
                 currentH1 = h1Match[1].trim();
-                currentH1Line = i;
+                currentH1Line = i + 1;
             } else if (hOtherMatch) {
                 pushSection();
                 const level = hOtherMatch[1].length;
@@ -237,7 +237,7 @@ export namespace FileParser {
                 while (stack.length && stack[stack.length - 1].level >= level) {
                     stack.pop();
                 }
-                stack.push({ level, title: headerText, line: i });
+                stack.push({ level, title: headerText, line: i + 1 });
             } else {
                 currentBody.push(line);
             }

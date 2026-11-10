@@ -57,49 +57,49 @@ Details about Beta project.
                 title: "Projects Project Alpha",
                 headings: [],
                 body: "Some intro text for Project Alpha.",
-                line: 1
+                line: 2
             },
             {
                 path: "mock/path/Projects.md",
                 title: "Projects Project Alpha",
                 headings: ["Overview"],
                 body: "This section describes the project overview.",
-                line: 4
+                line: 5
             },
             {
                 path: "mock/path/Projects.md",
                 title: "Projects Project Alpha",
                 headings: ["Overview", "Goals"],
                 body: "- Goal 1\n- Goal 2",
-                line: 7
+                line: 8
             },
             {
                 path: "mock/path/Projects.md",
                 title: "Projects Project Alpha",
                 headings: ["Timeline"],
                 body: "The project timeline goes here.",
-                line: 11
+                line: 12
             },
             {
                 path: "mock/path/Projects.md",
                 title: "Projects Project Beta",
                 headings: [],
                 body: "Introduction for Project Beta.",
-                line: 14
+                line: 15
             },
             {
                 path: "mock/path/Projects.md",
                 title: "Projects Project Beta",
                 headings: ["Summary"],
                 body: "Summary text for Beta.",
-                line: 17
+                line: 18
             },
             {
                 path: "mock/path/Projects.md",
                 title: "Projects Project Beta",
                 headings: ["Summary", "Details"],
                 body: "Details about Beta project.",
-                line: 20
+                line: 21
             }
         ]
     )
