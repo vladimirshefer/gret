@@ -442,7 +442,7 @@ export namespace SearchLogic {
             );
         `);
 
-        db.prepare('DELETE FROM notes WHERE path LIKE ?').run(libraryPath + '/%');
+        db.prepare('DELETE FROM notes WHERE instr(path, ?) = 1').run(libraryPath + '/');
 
         const insertStmt = db.prepare(
             'INSERT INTO notes (path, title, headings, body, line) VALUES (?, ?, ?, ?, ?)'
