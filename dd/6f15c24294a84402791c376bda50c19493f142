@@ -1,0 +1,28 @@
+gret.ts
+  s_6c03bac6b2fef4::t_f1902962f20117 240
+  s_6c03bac6b2fef4::t_941aa2b1c4f6d0 231
+test.ts
+  s_6c03bac6b2fef4::t_6bd47251cce631 60
+  s_6c03bac6b2fef4::t_055ca6aa9e5c91 81
+  s_6c03bac6b2fef4::t_7056f56398ae9f 88
+  s_6c03bac6b2fef4::t_3fabc6ae94642c 95
+  s_6c03bac6b2fef4::t_7a3f725df69722 102
+  s_6c03bac6b2fef4::t_194185a6cf17c3 74
+  s_6c03bac6b2fef4::t_31c58d89b2672f 67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dd6f15c24294a84402791c376bda50c19493f142",
+  "prompts": {},
+  "sessions": {
+    "s_6c03bac6b2fef4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e6601694-f811-40c0-bdf8-e1f00b91b5c9",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "Vladimir Shefer <quameu@gmail.com>"
+    }
+  }
+}
