@@ -104,3 +104,12 @@ Details about Beta project.
         ]
     )
 })
+
+test(() => {
+    const mockContent = ["# Guide", "Intro.", "## Deploy", "```bash", "# comment, not a heading", "```", "Done."].join("\n");
+
+    const results = FileParser.parseFile("mock/path/Notes.md", mockContent);
+
+    assert.deepStrictEqual(results.map(r => r.headings), [[], ["Deploy"]]);
+    assert.strictEqual(results[1].body, "```bash\n# comment, not a heading\n```\nDone.");
+})

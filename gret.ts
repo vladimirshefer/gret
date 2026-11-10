@@ -194,6 +194,7 @@ export namespace FileParser {
         let stack: { level: number, title: string, line: number }[] = [];
         let currentH1 = '';
         let currentH1Line = 0;
+        let inCodeFence = false;
 
         function pushSection() {
             if (!currentH1 && !stack.length && currentBody.length === 0) return;
@@ -212,6 +213,12 @@ export namespace FileParser {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             if (line.trim() === '') continue;
+
+            if (/^\s*(```|~~~)/.test(line)) inCodeFence = !inCodeFence;
+            if (inCodeFence) {
+                currentBody.push(line);
+                continue;
+            }
 
             const h1Match = line.match(/^#\s+(.*)/);
             const hOtherMatch = line.match(/^(#{2,6})\s+(.*)/);
