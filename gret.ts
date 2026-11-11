@@ -548,7 +548,7 @@ export namespace SearchLogic {
                 headings
             FROM (SELECT path,
                          bm25(notes, 0.5, 5.0, 3.0, 1.0)        AS rank,
-                         snippet(notes, 3, '[', ']', '...', 30) AS preview,
+                         snippet(notes, 3, '\u0001', '\u0002', '...', 30) AS preview,
                          line,
                          headings
                   FROM notes
@@ -639,7 +639,7 @@ namespace Display {
 
             pathResults.forEach(row => {
                 const headingDisplay = row.headings ? ` ${colors.gray}[${row.headings}]${colors.reset}` : '';
-                const preview = row.preview.replace(/\n/g, ' ').replace(/\[([^\]]+)\]/g, `${colors.red}$1${colors.reset}`);
+                const preview = row.preview.replace(/\n/g, ' ').replace(/\u0001([^\u0002]*)\u0002/g, `${colors.red}$1${colors.reset}`);
                 console.log(`  ${colors.yellow}${row.line}${colors.reset}${headingDisplay}: ${preview}`);
             });
         });
