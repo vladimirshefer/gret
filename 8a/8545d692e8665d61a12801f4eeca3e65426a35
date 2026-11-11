@@ -1,0 +1,21 @@
+package.json
+  s_6c03bac6b2fef4::t_6f99ec4b25542c 29
+package-lock.json
+  s_6c03bac6b2fef4::t_358007f9db655f 3,9,12,74-76,82-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8a8545d692e8665d61a12801f4eeca3e65426a35",
+  "prompts": {},
+  "sessions": {
+    "s_6c03bac6b2fef4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e6601694-f811-40c0-bdf8-e1f00b91b5c9",
+        "model": "claude-haiku-5-5"
+      },
+      "human_author": "Vladimir Shefer <quameu@gmail.com>"
+    }
+  }
+}
